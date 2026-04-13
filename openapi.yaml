@@ -1,0 +1,443 @@
+openapi: "3.2.0"
+info:
+  version: "1.0.0"
+  title: "study helper"
+  description: "API for the study helper"
+
+tags:
+  - name: Authentication
+  - name: Course
+  - name: Box
+  - name: Task
+
+paths:
+  /auth/login:
+    post:
+      operationId: "login"
+      description: "Get authentication token"
+      tags:
+        - authentication
+      requestBody:
+        description: "Login credentials for logging in"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/auth"
+      responses:
+        "200":
+          description: "Successfully logged in"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/authSuccess"
+
+  /auth/signup:
+    post:
+      operationId: "signup"
+      description: "Sign up and get authentication token"
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        description: "Login credentials for signing up"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/auth"
+      responses:
+        "200":
+          description: "Successfully signed up"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/authSuccess"
+
+  /courses:
+    get:
+      operationId: "getCourses"
+      description: "Fetch all courses"
+      tags:
+        - course
+      responses:
+        "200":
+          description: "Courses fetched"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+      security:
+        - BearerAuth: []
+
+  /course/{id}:
+    get:
+      operationId: "getCourse"
+      description: "Fetch a course"
+      tags:
+        - course
+      parameters:
+        - in: path
+          description: "Course ID for fetching course"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Course fetched"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+      security:
+        - BearerAuth: []
+    put:
+      operationId: "updateCourse"
+      description: "Edit a course"
+      tags:
+        - course
+      parameters:
+        - in: path
+          description: "Course ID for editing course"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        description: "Data for editing course"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+      responses:
+        "200":
+          description: "Course edited"
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: "deleteCourse"
+      description: "Delete a course"
+      tags:
+        - course
+      parameters:
+        - in: path
+          description: "Course id for deleting course"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Course deleted"
+      security:
+        - BearerAuth: []
+
+  /course:
+    post:
+      operationId: "addCourse"
+      description: "Add a course"
+      tags:
+        - course
+      requestBody:
+        description: "Data for creating course"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+      responses:
+        "200":
+          description: "Course added"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+      security:
+        - BearerAuth: []
+
+  /box/{id}:
+    get:
+      operationId: "getBox"
+      description: "Fetch a box"
+      tags:
+        - box
+      parameters:
+        - in: path
+          description: "Box ID for fetching box"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Box fetched"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Box"
+      security:
+        - BearerAuth: []
+    post:
+      operationId: "addBox"
+      description: "Add a box to /course/{id}"
+      tags:
+        - box
+      parameters:
+        - in: path
+          description: "Course ID for creating box"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: "Data for creating box"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Box"
+      responses:
+        "200":
+          description: "Box added"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Box"
+      security:
+        - BearerAuth: []
+    put:
+      operationId: "updateBox"
+      description: "Edit a box"
+      tags:
+        - box
+      parameters:
+        - in: path
+          description: "Box ID for editing box"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: "Data for editing box"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Box"
+      responses:
+        "200":
+          description: "Box edited"
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: "deleteBox"
+      description: "Delete a box"
+      tags:
+        - box
+      parameters:
+        - in: path
+          description: "Box ID for deleting box"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Box deleted"
+      security:
+        - BearerAuth: []
+
+  /task/{id}:
+    get:
+      operationId: "getTask"
+      description: "Fetch a task"
+      tags:
+        - task
+      parameters:
+        - in: path
+          description: "Task ID for fetching task"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Task fetched"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+      security:
+        - BearerAuth: []
+    post:
+      operationId: "addTask"
+      description: "Add a task to /box/{id}"
+      tags:
+        - task
+      parameters:
+        - in: path
+          description: "Box ID for creating task"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: "Data for creating task"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+      responses:
+        "200":
+          description: "Task added"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+      security:
+        - BearerAuth: []
+    put:
+      operationId: "updateTask"
+      description: "Edit a task"
+      tags:
+        - task
+      parameters:
+        - in: path
+          description: "Task ID for editing task"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: "Data for editing task"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: "Task edited"
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: "deleteTask"
+      description: "Delete a task"
+      tags:
+        - task
+      parameters:
+        - in: path
+          description: "Task ID for deleting task"
+          name: "id"
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Task deleted"
+      security:
+        - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      description: "Security schema for JWT authentication"
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Course:
+      description: "Course schema for requests"
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          examples:
+            - 2
+        name:
+          type: string
+          examples:
+            - "CS 61A"
+        boxes:
+          type: array
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/Box"
+
+    Box:
+      description: "Box schema for requests"
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          examples:
+            - 1
+        frequency:
+          type: integer
+          examples:
+            - 7
+        startDate:
+          type: integer
+          examples:
+            - 1776047645
+        tasks:
+          type: array
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/Task"
+
+    Task:
+      description: "Task schema for POST requests"
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          examples:
+            - 3
+        done:
+          type: boolean
+          examples:
+            - true
+        description:
+          type: string
+          examples:
+            - "Understand using procedures as arguments"
+
+    TaskUpdate:
+      description: "Task schema for PUT requests"
+      allOf:
+        - $ref: "#/components/schemas/Task"
+        - type: object
+          properties:
+            box:
+              type: integer
+              examples:
+                - 5
+
+    auth:
+      description: "Authentication schema"
+      properties:
+        username:
+          type: string
+          examples:
+            - "AzureDiamond"
+        password:
+          type: string
+          examples:
+            - "hunter2"
+      required:
+        - username
+        - password
+
+    authSuccess:
+      description: "Authentication schema for successful responses"
+      properties:
+        token:
+          type: string
+          readOnly: true
+          examples:
+            - "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF6dXJlRGlhbW9uZCIsImlhdCI6MTUxNjIzOTAyMn0.96tkfxJnBWnf4Lt6T1cYshqjp4q_aIlwV1D3D0Dk1LU"
