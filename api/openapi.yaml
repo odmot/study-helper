@@ -1,13 +1,13 @@
 openapi: "3.2.0"
 info:
-  version: "1.0.0"
+  version: "0.0.1"
   title: "study helper"
   description: "API for the study helper"
 
 tags:
   - name: Authentication
-  - name: Course
-  - name: Box
+  - name: Category
+  - name: Tag
   - name: Task
 
 paths:
@@ -16,246 +16,418 @@ paths:
       operationId: "login"
       description: "Get authentication token"
       tags:
-        - authentication
+        - Authentication
       requestBody:
         description: "Login credentials for logging in"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/auth"
+              $ref: "#/components/schemas/Auth"
       responses:
         "200":
           description: "Successfully logged in"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/authSuccess"
+                $ref: "#/components/schemas/AuthSuccess"
+        "401":
+          description: "Unauthorised"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /auth/signup:
     post:
       operationId: "signup"
       description: "Sign up and get authentication token"
       tags:
-        - authentication
+        - Authentication
       requestBody:
         required: true
         description: "Login credentials for signing up"
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/auth"
+              $ref: "#/components/schemas/Auth"
       responses:
         "200":
           description: "Successfully signed up"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/authSuccess"
+                $ref: "#/components/schemas/AuthSuccess"
+        "401":
+          description: "Unauthorised"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
-  /courses:
+
+  /categories:
     get:
-      operationId: "getCourses"
-      description: "Fetch all courses"
+      operationId: "getCategory"
+      description: "Fetch all categories"
       tags:
-        - course
+        - Category
       responses:
         "200":
-          description: "Courses fetched"
+          description: "Categories fetched"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Course"
+                  $ref: "#/components/schemas/Category"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: []
+    post:
+      operationId: "addCategory"
+      description: "Add categories"
+      tags:
+        - Category
+      requestBody:
+        required: true
+        description: "Categories"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Category"
+      responses:
+        "200":
+          description: "Category added"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
 
-  /course/{id}:
+  /categories/{id}:
     get:
-      operationId: "getCourse"
-      description: "Fetch a course"
+      operationId: "getCategory"
+      description: "Fetch a Category"
       tags:
-        - course
+        - Category
       parameters:
         - in: path
-          description: "Course ID for fetching course"
+          description: "ID of Category"
           name: "id"
           required: true
           schema:
             type: integer
       responses:
         "200":
-          description: "Course fetched"
+          description: "Category fetched"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Course"
+                $ref: "#/components/schemas/Category"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     put:
-      operationId: "updateCourse"
-      description: "Edit a course"
+      operationId: "updateCategory"
+      description: "Edit a category"
       tags:
-        - course
+        - Category
       parameters:
         - in: path
-          description: "Course ID for editing course"
+          description: "ID of Category"
           name: "id"
           required: true
           schema:
             type: integer
       requestBody:
         required: true
-        description: "Data for editing course"
+        description: "Data for editing category"
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Course"
+              $ref: "#/components/schemas/Category"
       responses:
         "200":
-          description: "Course edited"
+          description: "Category edited"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     delete:
-      operationId: "deleteCourse"
-      description: "Delete a course"
+      operationId: "deleteCategory"
+      description: "Delete a category"
       tags:
-        - course
+        - Category
       parameters:
         - in: path
-          description: "Course id for deleting course"
+          description: "ID of Category"
           name: "id"
           required: true
           schema:
             type: integer
       responses:
         "204":
-          description: "Course deleted"
-      security:
-        - BearerAuth: []
-
-  /course:
-    post:
-      operationId: "addCourse"
-      description: "Add a course"
-      tags:
-        - course
-      requestBody:
-        description: "Data for creating course"
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Course"
-      responses:
-        "200":
-          description: "Course added"
+          description: "Category deleted"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Course"
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
 
-  /box/{id}:
+
+  /tags:
     get:
-      operationId: "getBox"
-      description: "Fetch a box"
+      operationId: "getTags"
+      description: "Fetch all tags"
       tags:
-        - box
-      parameters:
-        - in: path
-          description: "Box ID for fetching box"
-          name: "id"
-          required: true
-          schema:
-            type: integer
+        - Tag
       responses:
         "200":
-          description: "Box fetched"
+          description: "Tags fetched"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Box"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tag"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     post:
-      operationId: "addBox"
-      description: "Add a box to /course/{id}"
+      operationId: "addTags"
+      description: "Add tags"
       tags:
-        - box
+        - Tag
+      requestBody:
+        required: true
+        description: "Tags"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Tag"
+      responses:
+        "200":
+          description: "Tags added"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tag"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: []
+
+  /tags/{id}:
+    get:
+      operationId: "getTag"
+      description: "Fetch a tag"
+      tags:
+        - Tag
       parameters:
         - in: path
-          description: "Course ID for creating box"
+          description: "ID of tag"
           name: "id"
           required: true
           schema:
             type: integer
-      requestBody:
-        description: "Data for creating box"
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Box"
       responses:
         "200":
-          description: "Box added"
+          description: "Tag fetched"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Box"
+                $ref: "#/components/schemas/Tag"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     put:
-      operationId: "updateBox"
-      description: "Edit a box"
+      operationId: "updateTag"
+      description: "Edit a tag"
       tags:
-        - box
+        - Tag
       parameters:
         - in: path
-          description: "Box ID for editing box"
+          description: "ID of tag"
           name: "id"
           required: true
           schema:
             type: integer
       requestBody:
-        description: "Data for editing box"
         required: true
+        description: "Data for editing tag"
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Box"
+              $ref: "#/components/schemas/Tag"
       responses:
         "200":
-          description: "Box edited"
+          description: "Tag edited"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     delete:
-      operationId: "deleteBox"
-      description: "Delete a box"
+      operationId: "deleteTag"
+      description: "Delete a tag"
       tags:
-        - box
+        - Tag
       parameters:
         - in: path
-          description: "Box ID for deleting box"
+          description: "ID of tag"
           name: "id"
           required: true
           schema:
             type: integer
       responses:
         "204":
-          description: "Box deleted"
+          description: "Tag deleted"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
+
 
   /task/{id}:
     get:
       operationId: "getTask"
       description: "Fetch a task"
       tags:
-        - task
+        - Task
       parameters:
         - in: path
           description: "Task ID for fetching task"
@@ -270,13 +442,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     post:
       operationId: "addTask"
-      description: "Add a task to /box/{id}"
+      description: "Add a task to /categories/{id}"
       tags:
-        - task
+        - Task
       parameters:
         - in: path
           description: "Box ID for creating task"
@@ -298,13 +484,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     put:
       operationId: "updateTask"
       description: "Edit a task"
       tags:
-        - task
+        - Task
       parameters:
         - in: path
           description: "Task ID for editing task"
@@ -317,17 +517,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskUpdate"
+              $ref: "#/components/schemas/Task"
       responses:
         "200":
           description: "Task edited"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
     delete:
       operationId: "deleteTask"
       description: "Delete a task"
       tags:
-        - task
+        - Task
       parameters:
         - in: path
           description: "Task ID for deleting task"
@@ -338,6 +552,20 @@ paths:
       responses:
         "204":
           description: "Task deleted"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorised"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        default:
+          description: "Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
         - BearerAuth: []
 
@@ -350,8 +578,8 @@ components:
       bearerFormat: JWT
 
   schemas:
-    Course:
-      description: "Course schema for requests"
+    Category:
+      description: "Category Schema"
       properties:
         id:
           type: integer
@@ -362,63 +590,80 @@ components:
           type: string
           examples:
             - "CS 61A"
-        boxes:
-          type: array
-          readOnly: true
-          items:
-            $ref: "#/components/schemas/Box"
 
-    Box:
-      description: "Box schema for requests"
+    Tag:
+      description: "Tag Schema"
       properties:
         id:
           type: integer
           readOnly: true
           examples:
             - 1
-        frequency:
-          type: integer
+        name:
+          type: string
           examples:
-            - 7
-        startDate:
-          type: integer
-          examples:
-            - 1776047645
-        tasks:
-          type: array
-          readOnly: true
-          items:
-            $ref: "#/components/schemas/Task"
+            - "Computer Science"
 
     Task:
-      description: "Task schema for POST requests"
+      description: "Task schema"
       properties:
         id:
           type: integer
           readOnly: true
           examples:
             - 3
-        done:
-          type: boolean
-          examples:
-            - true
-        description:
+        name:
           type: string
           examples:
             - "Understand using procedures as arguments"
+        content:
+          type: string
+          examples:
+            - "blah blah"
+        category:
+          type: integer
+          examples:
+            - 2
+        tags:
+          type: array
+          items:
+            type: integer
+          uniqueItems: true
+          examples:
+            - [1, 2]
+        frequency:
+          type: integer
+          description: "Frequency of task in days, 0 is for archived tasks"
+          examples:
+            - "1"
 
-    TaskUpdate:
-      description: "Task schema for PUT requests"
-      allOf:
-        - $ref: "#/components/schemas/Task"
-        - type: object
-          properties:
-            box:
-              type: integer
-              examples:
-                - 5
+    Frequency:
+      description: "Frequency schema"
+      type: array
+      items:
+        type: integer
+      uniqueItems: true
+      examples:
+        - [1, 2, 7, 14, 28]
 
-    auth:
+    Account:
+      description: "Account schema"
+      properties:
+        username:
+          type: string
+          examples:
+            - "AzureDiamond"
+        email:
+          type: string
+          examples:
+            - "azurediamond@example.com"
+        password:
+          type: string
+          writeOnly: true
+          examples:
+            - "hunter2"
+
+    Auth:
       description: "Authentication schema"
       properties:
         username:
@@ -433,7 +678,7 @@ components:
         - username
         - password
 
-    authSuccess:
+    AuthSuccess:
       description: "Authentication schema for successful responses"
       properties:
         token:
@@ -441,3 +686,13 @@ components:
           readOnly: true
           examples:
             - "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF6dXJlRGlhbW9uZCIsImlhdCI6MTUxNjIzOTAyMn0.96tkfxJnBWnf4Lt6T1cYshqjp4q_aIlwV1D3D0Dk1LU"
+
+    Error:
+      description: "Error schema"
+      properties:
+        error:
+          type: string
+          examples:
+            - "error"
+      required:
+        - error
